@@ -1,0 +1,12 @@
+{% extends "base.jinja2" %}
+{% block content %}
+
+<h1> Series: {{ series_name }} </h1>
+<p> Number of tests: {{ total_tests }} </p>
+
+<h2><a href = "{{ newly_failing_url }}"> Newly Failing Tests ({{ newly_failing_count }}) </a></h1>
+<h2><a href = "{{ always_failing_url }}"> Always Failing Tests ({{ always_failing_count }}) </a></h2>
+<h2><a href = "{{ passing_url }}"> Passing Tests ({{ passing_count }}) </a></h2>
+<h2><a href = "{{ stale_url }}"> Tests Not Recently Run ({{ stale_count }}) </a></h2>
+
+{% endblock %}
