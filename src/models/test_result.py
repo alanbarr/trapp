@@ -95,24 +95,19 @@ class TestResult(object):
         self.test_duration = test_duration
 
         self.series_id = series_id
-        if self.series_id is None:
-            self._db_series_get_id()
+        self._db_series_get_id()
 
         self.batch_id = batch_id
-        if self.batch_id is None:
-            self._db_batch_get_id()
+        self._db_batch_get_id()
         
         self.vcs_id = vcs_id
-        if self.vcs_id is None:
-            self._db_vcs_get_id()
+        self._db_vcs_get_id()
 
         self.metadata_id = metadata_id
-        if self.metadata_id is None:
-            self._db_metadata_get_id()
+        self._db_metadata_get_id()
 
         self.test_id = test_id
-        if self.test_id is None:
-            self._db_test_get_id()
+        self._db_test_get_id()
 
         logger.debug("Created a TestResult object: {}".format(test_name))
 
@@ -161,6 +156,12 @@ class TestResult(object):
 
     def _db_test_get_id(self):
 
+        if self.test_id is not None:
+            return
+
+        if self.batch_id is None:
+            return
+
         self.test_id = Database.query_one(
                             """SELECT test_id FROM Test WHERE 
                             (test_name, batch_id) = (?,?)""",
@@ -180,7 +181,10 @@ class TestResult(object):
 
     def _db_vcs_get_id(self):
 
-        if self.vcs_system is None:
+        if self.vcs_id is not None:
+            return
+
+        if self.vcs_system is None or self.vcs_revision is None:
             return
 
         self.vcs_id = Database.query_one(
@@ -201,6 +205,9 @@ class TestResult(object):
 
     def _db_metadata_get_id(self):
 
+        if self.metadata_id is not None:
+            return
+
         if self.metadata is None:
             return 
 
@@ -219,6 +226,9 @@ class TestResult(object):
                             (self.series_name, ))
 
     def _db_series_get_id(self):
+
+        if self.series_id is not None:
+            return
 
         self.series_id = Database.query_one(
                             """SELECT series_id FROM Series WHERE
@@ -240,6 +250,9 @@ class TestResult(object):
 
         if self.batch_id is not None:
             return 
+
+        if self.series_id is None:
+            return
 
         self.batch_id = Database.query_one(
                             """SELECT batch_id FROM Batch WHERE 
