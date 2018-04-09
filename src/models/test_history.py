@@ -60,7 +60,7 @@ class TestHistory(object):
 
         rows = Database.query_rows(
                 SQL_TEST_QUERY + """
-                WHERE (Test.test_name, Series.series_name) = (?,?)
+                WHERE (Test.test_name = ? AND Series.series_name = ?)
                 ORDER BY Batch.batch_timestamp DESC""",
                 (test_name, series_name))
 

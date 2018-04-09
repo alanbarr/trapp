@@ -164,7 +164,7 @@ class TestResult(object):
 
         self.test_id = Database.query_one(
                             """SELECT test_id FROM Test WHERE 
-                            (test_name, batch_id) = (?,?)""",
+                            (test_name = ? AND  batch_id = ?)""",
                             (self.test_name, self.batch_id))
 
     def _db_vcs_save(self):
@@ -188,8 +188,8 @@ class TestResult(object):
             return
 
         self.vcs_id = Database.query_one(
-                            """SELECT vcs_id FROM Vcs WHERE
-                            (vcs_system, vcs_revision) = (?,?)""",
+                            """SELECT vcs_id FROM Vcs WHERE 
+                            (vcs_system = ? AND vcs_revision = ?)""",
                             (self.vcs_system, self.vcs_revision))
 
     def _db_metadata_save(self):
@@ -223,7 +223,7 @@ class TestResult(object):
 
         self.series_id = Database.execute(
                             """INSERT INTO Series (series_name) VALUES (?)""", 
-                            (self.series_name, ))
+                            (self.series_name,))
 
     def _db_series_get_id(self):
 
@@ -231,9 +231,8 @@ class TestResult(object):
             return
 
         self.series_id = Database.query_one(
-                            """SELECT series_id FROM Series WHERE
-                            series_name = (?) """,
-                            (self.series_name,))
+                            """SELECT series_id FROM Series WHERE series_name = (?)""",
+                            (self.series_name,)) 
 
     def _db_batch_save(self):
         
@@ -256,7 +255,7 @@ class TestResult(object):
 
         self.batch_id = Database.query_one(
                             """SELECT batch_id FROM Batch WHERE 
-                            (batch_timestamp, series_id) = (?, ?)""",
+                            (batch_timestamp = ? AND series_id = ?)""", 
                             (self.batch_timestamp, self.series_id))
 
     def db_save(self):
