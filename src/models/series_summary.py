@@ -95,7 +95,7 @@ class SeriesSummary(object):
         return len(self.always_failing_tests)
 
     def get_count_newly_failing_tests(self):
-        return len(self.newly_failing_tests)
+        return (len(self.newly_failing_stable_tests), len(self.newly_failing_tests))
 
     def get_count_not_recently_run_tests(self):
         return len(self.stale_tests)

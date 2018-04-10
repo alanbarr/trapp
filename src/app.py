@@ -153,11 +153,14 @@ def route_view_results_series_landing(series_name):
                         series_name=series_name,
                         result_type="stale")
 
+    (newly_failing_stable_count, newly_failing_total_count) = series.get_count_newly_failing_tests()
+
     return render_template("results_for_series_links.jinja2",
                            series_name=series_name,
                            total_tests=series.get_count_test_histories(),
                            newly_failing_url=newly_failing_url,
-                           newly_failing_count=series.get_count_newly_failing_tests(),
+                           newly_failing_stable_count = newly_failing_stable_count,
+                           newly_failing_total_count = newly_failing_total_count,
                            passing_url=passing_url,
                            passing_count=series.get_count_passing_tests(),
                            always_failing_url=always_failing_url,
