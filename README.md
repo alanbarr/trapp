@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/alanbarr/trapp.svg?branch=master)](https://travis-ci.org/alanbarr/trapp)
+
 # About
 
 Test Result Web App is a simple database intended to store test results.
