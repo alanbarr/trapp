@@ -23,7 +23,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ################################################################################
-import models.error
+import models.error as error
 import logging
 from common.database import Database
 import json
@@ -32,6 +32,7 @@ import datetime
 logger = logging.getLogger()
 
 TEST_RESULTS = ["PASS", "FAIL", "SKIP"]
+TIMESTAMP_FORMAT = "%Y-%m-%d{}%H:%M:%S"
 
 SQL_TEST_QUERY = """
 SELECT
@@ -82,16 +83,25 @@ class TestResult(object):
                  ):
         
         if test_result not in TEST_RESULTS:
-            raise models.error.InvalidArgument("Result was {}".format(test_result))
+            raise error.InvalidArgument(
+                    "Result was {}".format(test_result))
 
         self.series_name = series_name
+
+        if type(batch_timestamp) == str:
+            batch_timestamp = self._string_to_datetime(batch_timestamp)
         self.batch_timestamp = batch_timestamp
+
         self.vcs_system = vcs_system
         self.vcs_revision = vcs_revision
         self.metadata = metadata
         self.test_name = test_name
         self.test_result = test_result
+
+        if type(test_timestamp) == str:
+            test_timestamp = self._string_to_datetime(test_timestamp)
         self.test_timestamp = test_timestamp
+
         self.test_duration = test_duration
 
         self.series_id = series_id
@@ -112,14 +122,15 @@ class TestResult(object):
         logger.debug("Created a TestResult object: {}".format(test_name))
 
     def __repr__(self):
-        return "<{} {:#08x} - test_id: {} name: {} series_name: {} timestamp: \"{}\" test_result: {}>".format(
-                                    self.__class__.__name__,
-                                    id(self),
-                                    self.test_id,
-                                    self.test_name,
-                                    self.series_name,
-                                    self.batch_timestamp,
-                                    self.test_result)
+        return "<{} {:#08x} - test_id: {} name: {} series_name: {} " \
+               "timestamp: \"{}\" test_result: {}>".format(
+                    self.__class__.__name__,
+                    id(self),
+                    self.test_id,
+                    self.test_name,
+                    self.series_name,
+                    self.batch_timestamp.strftime(TIMESTAMP_FORMAT.format("T")),
+                    self.test_result)
 
     def __eq__(self, other):
 
@@ -353,10 +364,12 @@ class TestResult(object):
             return False
 
         if type(batch_timestamp) == str:
-            batch_timestamp = datetime.datetime.strptime(batch_timestamp, '%Y-%m-%d %H:%M:%S')
+            batch_timestamp = self._string_to_datetime(batch_timestamp)
 
         if self.batch_timestamp != batch_timestamp:
-            logger.debug("Not equal: batch_timestamp <{}> <{}>".format(str(self.batch_timestamp), str(batch_timestamp)))
+            logger.debug("Not equal: batch_timestamp <{}> <{}>".format(
+                                                    str(self.batch_timestamp),
+                                                    str(batch_timestamp)))
             return False
 
         if self.test_result != test_result:
@@ -385,5 +398,18 @@ class TestResult(object):
 
         return True
 
+    @staticmethod
+    def _string_to_datetime(timestamp):
+        if "T" in timestamp:
+            datetime_format = TIMESTAMP_FORMAT.format("T")
+        else:
+            datetime_format = TIMESTAMP_FORMAT.format(" ")
 
+        try:
+            dt = datetime.datetime.strptime(timestamp, datetime_format)
+        except ValueError as err:
+            raise error.InvalidTimestampFormat(
+                    "Invalid timestamp string {}".format(timestamp)) from err
+
+        return dt 
 

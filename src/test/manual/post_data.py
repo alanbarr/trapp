@@ -1,14 +1,16 @@
-import datetime 
+from datetime import datetime
 import json
 import urllib.request
 
 SERVER="http://localhost:5000/add_result"
 
+DT_FORMAT = "%Y-%m-%dT%H:%M:%S"
+
 result_data = [
 {
     "test_name" : "test name_1",
     "series_name" : "posted_data",
-    "batch_timestamp" : str(datetime.datetime(2018,1,1)),
+    "batch_timestamp" : datetime(2018,1,1).strftime(DT_FORMAT),
     "test_result" : "PASS",
     "vcs_system" : "git",
     "vcs_revision" : "somesha1",
@@ -17,7 +19,7 @@ result_data = [
 {
     "test_name" : "test name_1",
     "series_name" : "posted_data",
-    "batch_timestamp" : str(datetime.datetime(2018,1,2)),
+    "batch_timestamp" : datetime(2018,1,2).strftime(DT_FORMAT),
     "test_result" : "PASS",
     "vcs_system" : "git",
     "vcs_revision" : "somesha1",
@@ -26,7 +28,7 @@ result_data = [
 {
     "test_name" : "test name_1",
     "series_name" : "posted_data",
-    "batch_timestamp" : str(datetime.datetime(2018,1,3)),
+    "batch_timestamp" : datetime(2018,1,3).strftime(DT_FORMAT),
     "test_result" : "PASS",
     "vcs_system" : "git",
     "vcs_revision" : "somesha1",

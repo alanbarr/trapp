@@ -107,15 +107,15 @@ considered unstable.
 
 Format of timestamps is: 
 
-    YYYY-MM-DD HH:MM:SS 
+    YYYY-MM-DDTHH:MM:SS 
     
 aka Python's:
 
-    datetime.__str__()
+    datetime.isoformat(sep="T", timespec="seconds")
 
 or:
 
-    datetime.isoformat(" ")
+    datetime.strftime("%Y-%m-%dT%H:%M:%S")
 
 
 ## Minimum / Mandatory Example
@@ -123,7 +123,7 @@ or:
         {
             "test_name" : "minimum example",
             "series_name" : "readme_1",
-            "batch_timestamp" : "2018-01-01 20:00:00",
+            "batch_timestamp" : "2018-01-01T20:00:00",
             "test_result" : "PASS"
         }
     ]
@@ -134,12 +134,12 @@ or:
         {
             "test_name" : "full example",
             "series_name" : "readme_2",
-            "batch_timestamp" : "2018-01-01 20:00:00",
+            "batch_timestamp" : "2018-01-01T20:00:00",
             "test_result" : "PASS",
             "vcs_system" : "git",
             "vcs_revision" : "6f8ccdca83b89e18f838f4702e2d4d648b1de674",
             "metadata" : "some important metadata",
-            "test_timestamp" : "2018-01-01 20:20:20",
+            "test_timestamp" : "2018-01-01T20:20:20",
             "test_duration" : "59"
         }
     ]

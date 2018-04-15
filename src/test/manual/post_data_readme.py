@@ -8,13 +8,13 @@ result_data = [
     {
         "test_name" : "minimum example",
         "series_name" : "readme_1",
-        "batch_timestamp" : "2018-01-01 20:00:00",
+        "batch_timestamp" : "2018-01-01T20:00:00",
         "test_result" : "PASS"
     },
     {
         "test_name" : "full example",
         "series_name" : "readme_2",
-        "batch_timestamp" : "2018-01-01 20:00:00",
+        "batch_timestamp" : "2018-01-01T20:00:00",
         "test_result" : "PASS",
         "vcs_system" : "git",
         "vcs_revision" : "6f8ccdca83b89e18f838f4702e2d4d648b1de674",

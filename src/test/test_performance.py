@@ -80,8 +80,8 @@ class TestPerformance(unittest.TestCase):
             temp["vcs_system"] = "git"
             temp["metadata"] ="metadata: {}".format(i)
             temp["test_name"] = "test name {}".format(i)
-            temp["batch_timestamp"] = str(datetime.date.fromtimestamp(i))
-            temp["test_timestamp"] = str(datetime.date.fromtimestamp(i))
+            temp["batch_timestamp"] = str(datetime.datetime.fromtimestamp(i))
+            temp["test_timestamp"] = str(datetime.datetime.fromtimestamp(i))
             temp["vcs_revision"] = i
             temp["test_duration"] = i
             result_data.append(temp)
@@ -112,7 +112,7 @@ class TestPerformance(unittest.TestCase):
             temp["series_name"] = "mandatory fields {}".format(i)
             temp["test_name"] = "test name {}".format(i)
             temp["test_result"] = "PASS"
-            temp["batch_timestamp"] = str(datetime.date.fromtimestamp(i))
+            temp["batch_timestamp"] = str(datetime.datetime.fromtimestamp(i))
             result_data.append(temp)
 
         json_data = json.dumps(result_data)

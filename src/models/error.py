@@ -35,3 +35,6 @@ class UserError(Exception):
 
 class InvalidArgument(UserError):
     pass
+
+class InvalidTimestampFormat(UserError):
+    pass
