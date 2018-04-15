@@ -42,6 +42,7 @@ DELETE_DB = True
 
 datetime.datetime.utcnow()
 
+
 class TestHistoryState(unittest.TestCase):
 
     def setUp(self):
@@ -66,36 +67,33 @@ class TestHistoryState(unittest.TestCase):
             logger.debug("Deleting existing test database")
             os.remove(TEST_DATABASE_PATH)
 
-
-
-
     def test_stale(self):
 
         test_result_data = {
-            "test_name" : "test name",
-            "series_name" : "posted_data",
-            "batch_timestamp" : str(datetime.datetime(2018,3,14)),
-            "test_result" : "PASS",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1",
-            "metadata" : "some metadata",
-            "test_timestamp" : str(datetime.datetime(2018,3,14)),
-            "test_duration"  : 60
+            "test_name": "test name",
+            "series_name": "posted_data",
+            "batch_timestamp": str(datetime.datetime(2018, 3, 14)),
+            "test_result": "PASS",
+            "vcs_system": "git",
+            "vcs_revision": "somesha1",
+            "metadata": "some metadata",
+            "test_timestamp": str(datetime.datetime(2018, 3, 14)),
+            "test_duration": 60
         }
 
         json_data = json.dumps(test_result_data)
 
-        models.batch.add_batch(json_data,0)
+        models.batch.add_batch(json_data, 0)
 
         ########################################################################
         # Limit set to 0, test is not state
         ########################################################################
-        fake_todays_date = datetime.datetime(2018,3,18)
+        fake_todays_date = datetime.datetime(2018, 3, 18)
 
         retrieved = TestHistory(test_result_data["series_name"],
                                 test_result_data["test_name"],
-                                days_until_result_stale = 0,
-                                datetime_utc_now = fake_todays_date)
+                                days_until_result_stale=0,
+                                datetime_utc_now=fake_todays_date)
 
         self.assertEqual(len(retrieved.tests), 1)
         db_dbg = common.database.Database.get_debug()
@@ -107,8 +105,8 @@ class TestHistoryState(unittest.TestCase):
         ########################################################################
         retrieved = TestHistory(test_result_data["series_name"],
                                 test_result_data["test_name"],
-                                days_until_result_stale = 4,
-                                datetime_utc_now = fake_todays_date)
+                                days_until_result_stale=4,
+                                datetime_utc_now=fake_todays_date)
 
         self.assertEqual(len(retrieved.tests), 1)
         db_dbg = common.database.Database.get_debug()
@@ -120,8 +118,8 @@ class TestHistoryState(unittest.TestCase):
         ########################################################################
         retrieved = TestHistory(test_result_data["series_name"],
                                 test_result_data["test_name"],
-                                days_until_result_stale = 3,
-                                datetime_utc_now = fake_todays_date)
+                                days_until_result_stale=3,
+                                datetime_utc_now=fake_todays_date)
 
         self.assertEqual(len(retrieved.tests), 1)
         db_dbg = common.database.Database.get_debug()
@@ -132,15 +130,15 @@ class TestHistoryState(unittest.TestCase):
         # Add a new test dated within the valid range - no longer stale.
         ########################################################################
         test_result_data = {
-            "test_name" : "test name",
-            "series_name" : "posted_data",
-            "batch_timestamp" : str(datetime.datetime(2018,3,15)),
-            "test_result" : "PASS",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1",
-            "metadata" : "some metadata",
-            "test_timestamp" : str(datetime.datetime(2010,3,15)),
-            "test_duration"  : 60
+            "test_name": "test name",
+            "series_name": "posted_data",
+            "batch_timestamp": str(datetime.datetime(2018, 3, 15)),
+            "test_result": "PASS",
+            "vcs_system": "git",
+            "vcs_revision": "somesha1",
+            "metadata": "some metadata",
+            "test_timestamp": str(datetime.datetime(2010, 3, 15)),
+            "test_duration": 60
         }
 
         json_data = json.dumps(test_result_data)
@@ -149,8 +147,8 @@ class TestHistoryState(unittest.TestCase):
 
         retrieved = TestHistory(test_result_data["series_name"],
                                 test_result_data["test_name"],
-                                days_until_result_stale = 4,
-                                datetime_utc_now = fake_todays_date)
+                                days_until_result_stale=4,
+                                datetime_utc_now=fake_todays_date)
 
         self.assertEqual(len(retrieved.tests), 2)
         db_dbg = common.database.Database.get_debug()
@@ -162,30 +160,29 @@ class TestHistoryState(unittest.TestCase):
         ########################################################################
         retrieved = TestHistory(test_result_data["series_name"],
                                 test_result_data["test_name"],
-                                days_until_result_stale = 2,
-                                datetime_utc_now = fake_todays_date)
+                                days_until_result_stale=2,
+                                datetime_utc_now=fake_todays_date)
 
         self.assertEqual(len(retrieved.tests), 2)
         db_dbg = common.database.Database.get_debug()
         self.assertEqual(db_dbg.countTest, 2)
         self.assertEqual(retrieved.state, TestState.stale)
 
-
     def test_stale_skipped_is_ignored(self):
 
-        fake_todays_date = datetime.datetime(2018,5,10)
+        fake_todays_date = datetime.datetime(2018, 5, 10)
 
         ########################################################################
         # Add passing test with next day - test is passing
         ########################################################################
         test_result_data = {
-            "test_name" : "test name",
-            "series_name" : "posted_data",
-            "batch_timestamp" : str(datetime.datetime(2018,5,7)),
-            "test_result" : "PASS",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1",
-            "metadata" : "some metadata",
+            "test_name": "test name",
+            "series_name": "posted_data",
+            "batch_timestamp": str(datetime.datetime(2018, 5, 7)),
+            "test_result": "PASS",
+            "vcs_system": "git",
+            "vcs_revision": "somesha1",
+            "metadata": "some metadata",
         }
 
         json_data = json.dumps(test_result_data)
@@ -194,8 +191,8 @@ class TestHistoryState(unittest.TestCase):
 
         retrieved = TestHistory(test_result_data["series_name"],
                                 test_result_data["test_name"],
-                                days_until_result_stale = 3,
-                                datetime_utc_now = fake_todays_date)
+                                days_until_result_stale=3,
+                                datetime_utc_now=fake_todays_date)
 
         self.assertEqual(len(retrieved.tests), 1)
         db_dbg = common.database.Database.get_debug()
@@ -207,13 +204,13 @@ class TestHistoryState(unittest.TestCase):
         # Test should not be considered by logic and history now seen as stale
         ########################################################################
         test_result_data = {
-            "test_name" : "test name",
-            "series_name" : "posted_data",
-            "batch_timestamp" : str(datetime.datetime(2018,5,8)),
-            "test_result" : "SKIP",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1",
-            "metadata" : "some metadata",
+            "test_name": "test name",
+            "series_name": "posted_data",
+            "batch_timestamp": str(datetime.datetime(2018, 5, 8)),
+            "test_result": "SKIP",
+            "vcs_system": "git",
+            "vcs_revision": "somesha1",
+            "metadata": "some metadata",
         }
 
         json_data = json.dumps(test_result_data)
@@ -222,8 +219,8 @@ class TestHistoryState(unittest.TestCase):
 
         retrieved = TestHistory(test_result_data["series_name"],
                                 test_result_data["test_name"],
-                                days_until_result_stale = 2,
-                                datetime_utc_now = fake_todays_date)
+                                days_until_result_stale=2,
+                                datetime_utc_now=fake_todays_date)
 
         self.assertEqual(len(retrieved.tests), 2)
         db_dbg = common.database.Database.get_debug()
@@ -234,13 +231,13 @@ class TestHistoryState(unittest.TestCase):
         # Add next day passing test - state is passing
         ########################################################################
         test_result_data = {
-            "test_name" : "test name",
-            "series_name" : "posted_data",
-            "batch_timestamp" : str(datetime.datetime(2018,5,9)),
-            "test_result" : "PASS",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1",
-            "metadata" : "some metadata",
+            "test_name": "test name",
+            "series_name": "posted_data",
+            "batch_timestamp": str(datetime.datetime(2018, 5, 9)),
+            "test_result": "PASS",
+            "vcs_system": "git",
+            "vcs_revision": "somesha1",
+            "metadata": "some metadata",
         }
 
         json_data = json.dumps(test_result_data)
@@ -249,14 +246,13 @@ class TestHistoryState(unittest.TestCase):
 
         retrieved = TestHistory(test_result_data["series_name"],
                                 test_result_data["test_name"],
-                                days_until_result_stale = 1,
-                                datetime_utc_now = fake_todays_date)
+                                days_until_result_stale=1,
+                                datetime_utc_now=fake_todays_date)
 
         self.assertEqual(len(retrieved.tests), 3)
         db_dbg = common.database.Database.get_debug()
         self.assertEqual(db_dbg.countTest, 3)
         self.assertEqual(retrieved.state, TestState.passing)
-
 
     def test_passing(self):
         ########################################################################
@@ -264,15 +260,15 @@ class TestHistoryState(unittest.TestCase):
         ########################################################################
 
         test_result_data = {
-            "test_name" : "test name",
-            "series_name" : "posted_data",
-            "batch_timestamp" : str(datetime.datetime(2010,10,10)),
-            "test_result" : "PASS",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1",
-            "metadata" : "some metadata",
-            "test_timestamp" : str(datetime.datetime(2010,10,10)),
-            "test_duration"  : 1
+            "test_name": "test name",
+            "series_name": "posted_data",
+            "batch_timestamp": str(datetime.datetime(2010, 10, 10)),
+            "test_result": "PASS",
+            "vcs_system": "git",
+            "vcs_revision": "somesha1",
+            "metadata": "some metadata",
+            "test_timestamp": str(datetime.datetime(2010, 10, 10)),
+            "test_duration": 1
         }
 
         json_data = json.dumps(test_result_data)
@@ -281,27 +277,26 @@ class TestHistoryState(unittest.TestCase):
 
         retrieved = TestHistory(test_result_data["series_name"],
                                 test_result_data["test_name"],
-                                days_until_result_stale = 0)
+                                days_until_result_stale=0)
 
         self.assertEqual(len(retrieved.tests), 1)
         db_dbg = common.database.Database.get_debug()
         self.assertEqual(db_dbg.countTest, 1)
         self.assertEqual(retrieved.state, TestState.passing)
 
-
         ########################################################################
         # Add passing test with next day - test is passing
         ########################################################################
         test_result_data = {
-            "test_name" : "test name",
-            "series_name" : "posted_data",
-            "batch_timestamp" : str(datetime.datetime(2010,10,11)),
-            "test_result" : "PASS",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1",
-            "metadata" : "some metadata",
-            "test_timestamp" : str(datetime.datetime(2010,10,11)),
-            "test_duration"  : 1
+            "test_name": "test name",
+            "series_name": "posted_data",
+            "batch_timestamp": str(datetime.datetime(2010, 10, 11)),
+            "test_result": "PASS",
+            "vcs_system": "git",
+            "vcs_revision": "somesha1",
+            "metadata": "some metadata",
+            "test_timestamp": str(datetime.datetime(2010, 10, 11)),
+            "test_duration": 1
         }
 
         json_data = json.dumps(test_result_data)
@@ -310,7 +305,7 @@ class TestHistoryState(unittest.TestCase):
 
         retrieved = TestHistory(test_result_data["series_name"],
                                 test_result_data["test_name"],
-                                days_until_result_stale = 0)
+                                days_until_result_stale=0)
 
         self.assertEqual(len(retrieved.tests), 2)
         db_dbg = common.database.Database.get_debug()
@@ -323,15 +318,15 @@ class TestHistoryState(unittest.TestCase):
         ########################################################################
 
         test_result_data = {
-            "test_name" : "test name",
-            "series_name" : "posted_data",
-            "batch_timestamp" : str(datetime.datetime(2010,10,10)),
-            "test_result" : "PASS",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1",
-            "metadata" : "some metadata",
-            "test_timestamp" : str(datetime.datetime(2010,10,10)),
-            "test_duration"  : 1
+            "test_name": "test name",
+            "series_name": "posted_data",
+            "batch_timestamp": str(datetime.datetime(2010, 10, 10)),
+            "test_result": "PASS",
+            "vcs_system": "git",
+            "vcs_revision": "somesha1",
+            "metadata": "some metadata",
+            "test_timestamp": str(datetime.datetime(2010, 10, 10)),
+            "test_duration": 1
         }
 
         json_data = json.dumps(test_result_data)
@@ -340,27 +335,26 @@ class TestHistoryState(unittest.TestCase):
 
         retrieved = TestHistory(test_result_data["series_name"],
                                 test_result_data["test_name"],
-                                days_until_result_stale = 0)
+                                days_until_result_stale=0)
 
         self.assertEqual(len(retrieved.tests), 1)
         db_dbg = common.database.Database.get_debug()
         self.assertEqual(db_dbg.countTest, 1)
         self.assertEqual(retrieved.state, TestState.passing)
 
-
         ########################################################################
         # Add passing test with next day - test is passing
         ########################################################################
         test_result_data = {
-            "test_name" : "test name",
-            "series_name" : "posted_data",
-            "batch_timestamp" : str(datetime.datetime(2010,10,11)),
-            "test_result" : "PASS",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1",
-            "metadata" : "some metadata",
-            "test_timestamp" : str(datetime.datetime(2010,10,11)),
-            "test_duration"  : 1
+            "test_name": "test name",
+            "series_name": "posted_data",
+            "batch_timestamp": str(datetime.datetime(2010, 10, 11)),
+            "test_result": "PASS",
+            "vcs_system": "git",
+            "vcs_revision": "somesha1",
+            "metadata": "some metadata",
+            "test_timestamp": str(datetime.datetime(2010, 10, 11)),
+            "test_duration": 1
         }
 
         json_data = json.dumps(test_result_data)
@@ -369,27 +363,26 @@ class TestHistoryState(unittest.TestCase):
 
         retrieved = TestHistory(test_result_data["series_name"],
                                 test_result_data["test_name"],
-                                days_until_result_stale = 0)
+                                days_until_result_stale=0)
 
         self.assertEqual(len(retrieved.tests), 2)
         db_dbg = common.database.Database.get_debug()
         self.assertEqual(db_dbg.countTest, 2)
         self.assertEqual(retrieved.state, TestState.passing)
 
-
         ########################################################################
         # Add failing test - newly_failing
         ########################################################################
         test_result_data = {
-            "test_name" : "test name",
-            "series_name" : "posted_data",
-            "batch_timestamp" : str(datetime.datetime(2010,10,12)),
-            "test_result" : "FAIL",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1",
-            "metadata" : "some metadata",
-            "test_timestamp" : str(datetime.datetime(2010,10,12)),
-            "test_duration"  : 1
+            "test_name": "test name",
+            "series_name": "posted_data",
+            "batch_timestamp": str(datetime.datetime(2010, 10, 12)),
+            "test_result": "FAIL",
+            "vcs_system": "git",
+            "vcs_revision": "somesha1",
+            "metadata": "some metadata",
+            "test_timestamp": str(datetime.datetime(2010, 10, 12)),
+            "test_duration": 1
         }
 
         json_data = json.dumps(test_result_data)
@@ -398,7 +391,7 @@ class TestHistoryState(unittest.TestCase):
 
         retrieved = TestHistory(test_result_data["series_name"],
                                 test_result_data["test_name"],
-                                days_until_result_stale = 0)
+                                days_until_result_stale=0)
 
         self.assertEqual(len(retrieved.tests), 3)
         db_dbg = common.database.Database.get_debug()
@@ -409,15 +402,15 @@ class TestHistoryState(unittest.TestCase):
         # Add passing test - passing
         ########################################################################
         test_result_data = {
-            "test_name" : "test name",
-            "series_name" : "posted_data",
-            "batch_timestamp" : str(datetime.datetime(2010,10,13)),
-            "test_result" : "PASS",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1",
-            "metadata" : "some metadata",
-            "test_timestamp" : str(datetime.datetime(2010,10,13)),
-            "test_duration"  : 1
+            "test_name": "test name",
+            "series_name": "posted_data",
+            "batch_timestamp": str(datetime.datetime(2010, 10, 13)),
+            "test_result": "PASS",
+            "vcs_system": "git",
+            "vcs_revision": "somesha1",
+            "metadata": "some metadata",
+            "test_timestamp": str(datetime.datetime(2010, 10, 13)),
+            "test_duration": 1
         }
 
         json_data = json.dumps(test_result_data)
@@ -426,7 +419,7 @@ class TestHistoryState(unittest.TestCase):
 
         retrieved = TestHistory(test_result_data["series_name"],
                                 test_result_data["test_name"],
-                                days_until_result_stale = 0)
+                                days_until_result_stale=0)
 
         self.assertEqual(len(retrieved.tests), 4)
         db_dbg = common.database.Database.get_debug()
@@ -437,15 +430,15 @@ class TestHistoryState(unittest.TestCase):
         # Add failing test - newly failing
         ########################################################################
         test_result_data = {
-            "test_name" : "test name",
-            "series_name" : "posted_data",
-            "batch_timestamp" : str(datetime.datetime(2010,10,14)),
-            "test_result" : "FAIL",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1",
-            "metadata" : "some metadata",
-            "test_timestamp" : str(datetime.datetime(2010,10,14)),
-            "test_duration"  : 1
+            "test_name": "test name",
+            "series_name": "posted_data",
+            "batch_timestamp": str(datetime.datetime(2010, 10, 14)),
+            "test_result": "FAIL",
+            "vcs_system": "git",
+            "vcs_revision": "somesha1",
+            "metadata": "some metadata",
+            "test_timestamp": str(datetime.datetime(2010, 10, 14)),
+            "test_duration": 1
         }
 
         json_data = json.dumps(test_result_data)
@@ -454,27 +447,26 @@ class TestHistoryState(unittest.TestCase):
 
         retrieved = TestHistory(test_result_data["series_name"],
                                 test_result_data["test_name"],
-                                days_until_result_stale = 0)
+                                days_until_result_stale=0)
 
         self.assertEqual(len(retrieved.tests), 5)
         db_dbg = common.database.Database.get_debug()
         self.assertEqual(db_dbg.countTest, 5)
         self.assertEqual(retrieved.state, TestState.newly_failing)
 
-
         ########################################################################
         # Add skipped test - newly failing
         ########################################################################
         test_result_data = {
-            "test_name" : "test name",
-            "series_name" : "posted_data",
-            "batch_timestamp" : str(datetime.datetime(2010,10,15)),
-            "test_result" : "SKIP",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1",
-            "metadata" : "some metadata",
-            "test_timestamp" : str(datetime.datetime(2010,10,15)),
-            "test_duration"  : 1
+            "test_name": "test name",
+            "series_name": "posted_data",
+            "batch_timestamp": str(datetime.datetime(2010, 10, 15)),
+            "test_result": "SKIP",
+            "vcs_system": "git",
+            "vcs_revision": "somesha1",
+            "metadata": "some metadata",
+            "test_timestamp": str(datetime.datetime(2010, 10, 15)),
+            "test_duration": 1
         }
 
         json_data = json.dumps(test_result_data)
@@ -483,7 +475,7 @@ class TestHistoryState(unittest.TestCase):
 
         retrieved = TestHistory(test_result_data["series_name"],
                                 test_result_data["test_name"],
-                                days_until_result_stale = 0)
+                                days_until_result_stale=0)
 
         self.assertEqual(len(retrieved.tests), 6)
         db_dbg = common.database.Database.get_debug()
@@ -496,15 +488,15 @@ class TestHistoryState(unittest.TestCase):
         # Add failing test - always failing
         ########################################################################
         test_result_data = {
-            "test_name" : "test name",
-            "series_name" : "posted_data",
-            "batch_timestamp" : str(datetime.datetime(2009,1,1)),
-            "test_result" : "FAIL",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1",
-            "metadata" : "some metadata",
-            "test_timestamp" : str(datetime.datetime(2009,1,1)),
-            "test_duration"  : 2
+            "test_name": "test name",
+            "series_name": "posted_data",
+            "batch_timestamp": str(datetime.datetime(2009, 1, 1)),
+            "test_result": "FAIL",
+            "vcs_system": "git",
+            "vcs_revision": "somesha1",
+            "metadata": "some metadata",
+            "test_timestamp": str(datetime.datetime(2009, 1, 1)),
+            "test_duration": 2
         }
 
         json_data = json.dumps(test_result_data)
@@ -513,27 +505,26 @@ class TestHistoryState(unittest.TestCase):
 
         retrieved = TestHistory(test_result_data["series_name"],
                                 test_result_data["test_name"],
-                                days_until_result_stale = 0)
+                                days_until_result_stale=0)
 
         self.assertEqual(len(retrieved.tests), 1)
         db_dbg = common.database.Database.get_debug()
         self.assertEqual(db_dbg.countTest, 1)
         self.assertEqual(retrieved.state, TestState.always_failing)
 
-
         ########################################################################
         # Add failing test - always failing
         ########################################################################
         test_result_data = {
-            "test_name" : "test name",
-            "series_name" : "posted_data",
-            "batch_timestamp" : str(datetime.datetime(2009,1,2)),
-            "test_result" : "FAIL",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1",
-            "metadata" : "some metadata",
-            "test_timestamp" : str(datetime.datetime(2009,1,2)),
-            "test_duration"  : 2
+            "test_name": "test name",
+            "series_name": "posted_data",
+            "batch_timestamp": str(datetime.datetime(2009, 1, 2)),
+            "test_result": "FAIL",
+            "vcs_system": "git",
+            "vcs_revision": "somesha1",
+            "metadata": "some metadata",
+            "test_timestamp": str(datetime.datetime(2009, 1, 2)),
+            "test_duration": 2
         }
 
         json_data = json.dumps(test_result_data)
@@ -542,7 +533,7 @@ class TestHistoryState(unittest.TestCase):
 
         retrieved = TestHistory(test_result_data["series_name"],
                                 test_result_data["test_name"],
-                                days_until_result_stale = 0)
+                                days_until_result_stale=0)
 
         self.assertEqual(len(retrieved.tests), 2)
         db_dbg = common.database.Database.get_debug()
@@ -553,15 +544,15 @@ class TestHistoryState(unittest.TestCase):
         # Add failing test - always failing
         ########################################################################
         test_result_data = {
-            "test_name" : "test name",
-            "series_name" : "posted_data",
-            "batch_timestamp" : str(datetime.datetime(2009,1,3)),
-            "test_result" : "FAIL",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1",
-            "metadata" : "some metadata",
-            "test_timestamp" : str(datetime.datetime(2009,1,3)),
-            "test_duration"  : 2
+            "test_name": "test name",
+            "series_name": "posted_data",
+            "batch_timestamp": str(datetime.datetime(2009, 1, 3)),
+            "test_result": "FAIL",
+            "vcs_system": "git",
+            "vcs_revision": "somesha1",
+            "metadata": "some metadata",
+            "test_timestamp": str(datetime.datetime(2009, 1, 3)),
+            "test_duration": 2
         }
 
         json_data = json.dumps(test_result_data)
@@ -570,27 +561,26 @@ class TestHistoryState(unittest.TestCase):
 
         retrieved = TestHistory(test_result_data["series_name"],
                                 test_result_data["test_name"],
-                                days_until_result_stale = 0)
+                                days_until_result_stale=0)
 
         self.assertEqual(len(retrieved.tests), 3)
         db_dbg = common.database.Database.get_debug()
         self.assertEqual(db_dbg.countTest, 3)
         self.assertEqual(retrieved.state, TestState.always_failing)
 
-
         ########################################################################
         # Add skipped test - always failing
         ########################################################################
         test_result_data = {
-            "test_name" : "test name",
-            "series_name" : "posted_data",
-            "batch_timestamp" : str(datetime.datetime(2009,1,4)),
-            "test_result" : "SKIP",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1",
-            "metadata" : "some metadata",
-            "test_timestamp" : str(datetime.datetime(2009,1,4)),
-            "test_duration"  : 10
+            "test_name": "test name",
+            "series_name": "posted_data",
+            "batch_timestamp": str(datetime.datetime(2009, 1, 4)),
+            "test_result": "SKIP",
+            "vcs_system": "git",
+            "vcs_revision": "somesha1",
+            "metadata": "some metadata",
+            "test_timestamp": str(datetime.datetime(2009, 1, 4)),
+            "test_duration": 10
         }
 
         json_data = json.dumps(test_result_data)
@@ -599,7 +589,7 @@ class TestHistoryState(unittest.TestCase):
 
         retrieved = TestHistory(test_result_data["series_name"],
                                 test_result_data["test_name"],
-                                days_until_result_stale = 0)
+                                days_until_result_stale=0)
 
         self.assertEqual(len(retrieved.tests), 4)
         db_dbg = common.database.Database.get_debug()
@@ -610,15 +600,15 @@ class TestHistoryState(unittest.TestCase):
         # Add passing test - passing
         ########################################################################
         test_result_data = {
-            "test_name" : "test name",
-            "series_name" : "posted_data",
-            "batch_timestamp" : str(datetime.datetime(2009,1,5)),
-            "test_result" : "PASS",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1",
-            "metadata" : "some metadata",
-            "test_timestamp" : str(datetime.datetime(2009,1,5)),
-            "test_duration"  : 10
+            "test_name": "test name",
+            "series_name": "posted_data",
+            "batch_timestamp": str(datetime.datetime(2009, 1, 5)),
+            "test_result": "PASS",
+            "vcs_system": "git",
+            "vcs_revision": "somesha1",
+            "metadata": "some metadata",
+            "test_timestamp": str(datetime.datetime(2009, 1, 5)),
+            "test_duration": 10
         }
 
         json_data = json.dumps(test_result_data)
@@ -627,7 +617,7 @@ class TestHistoryState(unittest.TestCase):
 
         retrieved = TestHistory(test_result_data["series_name"],
                                 test_result_data["test_name"],
-                                days_until_result_stale = 0)
+                                days_until_result_stale=0)
 
         self.assertEqual(len(retrieved.tests), 5)
         db_dbg = common.database.Database.get_debug()
@@ -638,15 +628,15 @@ class TestHistoryState(unittest.TestCase):
         # Add failing test - newly_failing
         ########################################################################
         test_result_data = {
-            "test_name" : "test name",
-            "series_name" : "posted_data",
-            "batch_timestamp" : str(datetime.datetime(2009,1,6)),
-            "test_result" : "FAIL",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1",
-            "metadata" : "some metadata",
-            "test_timestamp" : str(datetime.datetime(2009,1,6)),
-            "test_duration"  : 10
+            "test_name": "test name",
+            "series_name": "posted_data",
+            "batch_timestamp": str(datetime.datetime(2009, 1, 6)),
+            "test_result": "FAIL",
+            "vcs_system": "git",
+            "vcs_revision": "somesha1",
+            "metadata": "some metadata",
+            "test_timestamp": str(datetime.datetime(2009, 1, 6)),
+            "test_duration": 10
         }
 
         json_data = json.dumps(test_result_data)
@@ -655,7 +645,7 @@ class TestHistoryState(unittest.TestCase):
 
         retrieved = TestHistory(test_result_data["series_name"],
                                 test_result_data["test_name"],
-                                days_until_result_stale = 0)
+                                days_until_result_stale=0)
 
         self.assertEqual(len(retrieved.tests), 6)
         db_dbg = common.database.Database.get_debug()
@@ -666,15 +656,15 @@ class TestHistoryState(unittest.TestCase):
         # Add failing test - newly_failing
         ########################################################################
         test_result_data = {
-            "test_name" : "test name",
-            "series_name" : "posted_data",
-            "batch_timestamp" : str(datetime.datetime(2009,1,7)),
-            "test_result" : "FAIL",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1",
-            "metadata" : "some metadata",
-            "test_timestamp" : str(datetime.datetime(2009,1,7)),
-            "test_duration"  : 10
+            "test_name": "test name",
+            "series_name": "posted_data",
+            "batch_timestamp": str(datetime.datetime(2009, 1, 7)),
+            "test_result": "FAIL",
+            "vcs_system": "git",
+            "vcs_revision": "somesha1",
+            "metadata": "some metadata",
+            "test_timestamp": str(datetime.datetime(2009, 1, 7)),
+            "test_duration": 10
         }
 
         json_data = json.dumps(test_result_data)
@@ -683,7 +673,7 @@ class TestHistoryState(unittest.TestCase):
 
         retrieved = TestHistory(test_result_data["series_name"],
                                 test_result_data["test_name"],
-                                days_until_result_stale = 0)
+                                days_until_result_stale=0)
 
         self.assertEqual(len(retrieved.tests), 7)
         db_dbg = common.database.Database.get_debug()
@@ -696,15 +686,15 @@ class TestHistoryState(unittest.TestCase):
         # Add skipped test - skipped
         ########################################################################
         test_result_data = {
-            "test_name" : "test name",
-            "series_name" : "posted_data",
-            "batch_timestamp" : str(datetime.datetime(2000,12,1)),
-            "test_result" : "SKIP",
-            "vcs_system" : "fossil",
-            "vcs_revision" : "something",
-            "metadata" : "skipped this test for reason x",
-            "test_timestamp" : str(datetime.datetime(2000,12,1)),
-            "test_duration"  : 2
+            "test_name": "test name",
+            "series_name": "posted_data",
+            "batch_timestamp": str(datetime.datetime(2000, 12, 1)),
+            "test_result": "SKIP",
+            "vcs_system": "fossil",
+            "vcs_revision": "something",
+            "metadata": "skipped this test for reason x",
+            "test_timestamp": str(datetime.datetime(2000, 12, 1)),
+            "test_duration": 2
         }
 
         json_data = json.dumps(test_result_data)
@@ -713,27 +703,26 @@ class TestHistoryState(unittest.TestCase):
 
         retrieved = TestHistory(test_result_data["series_name"],
                                 test_result_data["test_name"],
-                                days_until_result_stale = 0)
+                                days_until_result_stale=0)
 
         self.assertEqual(len(retrieved.tests), 1)
         db_dbg = common.database.Database.get_debug()
         self.assertEqual(db_dbg.countTest, 1)
         self.assertEqual(retrieved.state, TestState.skipped)
 
-
         ########################################################################
         # Add skipped test - skipped
         ########################################################################
         test_result_data = {
-            "test_name" : "test name",
-            "series_name" : "posted_data",
-            "batch_timestamp" : str(datetime.datetime(2000,12,2)),
-            "test_result" : "SKIP",
-            "vcs_system" : "fossil",
-            "vcs_revision" : "something",
-            "metadata" : "skipped this test for reason y",
-            "test_timestamp" : str(datetime.datetime(2000,12,2)),
-            "test_duration"  : 5
+            "test_name": "test name",
+            "series_name": "posted_data",
+            "batch_timestamp": str(datetime.datetime(2000, 12, 2)),
+            "test_result": "SKIP",
+            "vcs_system": "fossil",
+            "vcs_revision": "something",
+            "metadata": "skipped this test for reason y",
+            "test_timestamp": str(datetime.datetime(2000, 12, 2)),
+            "test_duration": 5
         }
 
         json_data = json.dumps(test_result_data)
@@ -742,27 +731,26 @@ class TestHistoryState(unittest.TestCase):
 
         retrieved = TestHistory(test_result_data["series_name"],
                                 test_result_data["test_name"],
-                                days_until_result_stale = 0)
+                                days_until_result_stale=0)
 
         self.assertEqual(len(retrieved.tests), 2)
         db_dbg = common.database.Database.get_debug()
         self.assertEqual(db_dbg.countTest, 2)
         self.assertEqual(retrieved.state, TestState.skipped)
 
-
         ########################################################################
         # Add passing test - passing
         ########################################################################
         test_result_data = {
-            "test_name" : "test name",
-            "series_name" : "posted_data",
-            "batch_timestamp" : str(datetime.datetime(2000,12,3)),
-            "test_result" : "PASS",
-            "vcs_system" : "fossil",
-            "vcs_revision" : "something 5",
-            "metadata" : "finally fan the test",
-            "test_timestamp" : str(datetime.datetime(2000,12,3)),
-            "test_duration"  : 5
+            "test_name": "test name",
+            "series_name": "posted_data",
+            "batch_timestamp": str(datetime.datetime(2000, 12, 3)),
+            "test_result": "PASS",
+            "vcs_system": "fossil",
+            "vcs_revision": "something 5",
+            "metadata": "finally fan the test",
+            "test_timestamp": str(datetime.datetime(2000, 12, 3)),
+            "test_duration": 5
         }
 
         json_data = json.dumps(test_result_data)
@@ -771,7 +759,7 @@ class TestHistoryState(unittest.TestCase):
 
         retrieved = TestHistory(test_result_data["series_name"],
                                 test_result_data["test_name"],
-                                days_until_result_stale = 0)
+                                days_until_result_stale=0)
 
         self.assertEqual(len(retrieved.tests), 3)
         db_dbg = common.database.Database.get_debug()
@@ -782,15 +770,15 @@ class TestHistoryState(unittest.TestCase):
         # Add skipped test - passing
         ########################################################################
         test_result_data = {
-            "test_name" : "test name",
-            "series_name" : "posted_data",
-            "batch_timestamp" : str(datetime.datetime(2000,12,4)),
-            "test_result" : "SKIP",
-            "vcs_system" : "fossil",
-            "vcs_revision" : "something",
-            "metadata" : "skipped this test for reason z",
-            "test_timestamp" : str(datetime.datetime(2000,12,4)),
-            "test_duration"  : 5
+            "test_name": "test name",
+            "series_name": "posted_data",
+            "batch_timestamp": str(datetime.datetime(2000, 12, 4)),
+            "test_result": "SKIP",
+            "vcs_system": "fossil",
+            "vcs_revision": "something",
+            "metadata": "skipped this test for reason z",
+            "test_timestamp": str(datetime.datetime(2000, 12, 4)),
+            "test_duration": 5
         }
 
         json_data = json.dumps(test_result_data)
@@ -799,7 +787,7 @@ class TestHistoryState(unittest.TestCase):
 
         retrieved = TestHistory(test_result_data["series_name"],
                                 test_result_data["test_name"],
-                                days_until_result_stale = 0)
+                                days_until_result_stale=0)
 
         self.assertEqual(len(retrieved.tests), 4)
         db_dbg = common.database.Database.get_debug()

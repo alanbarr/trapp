@@ -27,6 +27,7 @@ import logging
 
 logger = logging.getLogger()
 
+
 class UserError(Exception):
     def __init__(self, message):
         self.message = message
@@ -35,6 +36,7 @@ class UserError(Exception):
 
 class InvalidArgument(UserError):
     pass
+
 
 class InvalidTimestampFormat(UserError):
     pass

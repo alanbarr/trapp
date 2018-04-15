@@ -44,6 +44,7 @@ TEST_DATABASE_PATH = "test/data/test_performance.sqlite"
 
 DELETE_DB = True
 
+
 class TestPerformance(unittest.TestCase):
 
     def setUp(self):
@@ -78,7 +79,7 @@ class TestPerformance(unittest.TestCase):
             temp["series_name"] = "all fields {}".format(i)
             temp["test_result"] = "PASS"
             temp["vcs_system"] = "git"
-            temp["metadata"] ="metadata: {}".format(i)
+            temp["metadata"] = "metadata: {}".format(i)
             temp["test_name"] = "test name {}".format(i)
             temp["batch_timestamp"] = str(datetime.datetime.fromtimestamp(i))
             temp["test_timestamp"] = str(datetime.datetime.fromtimestamp(i))
@@ -100,7 +101,6 @@ class TestPerformance(unittest.TestCase):
 
         db_size = os.path.getsize(TEST_DATABASE_PATH)
         logger.info("Database size: {}".format(db_size))
-
 
     def test_only_mandatory_fields(self):
 
@@ -129,5 +129,3 @@ class TestPerformance(unittest.TestCase):
 
         db_size = os.path.getsize(TEST_DATABASE_PATH)
         logger.info("Database size: {}".format(db_size))
-
-

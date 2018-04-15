@@ -40,6 +40,7 @@ TEST_DATABASE_PATH = "test/data/test_dev_sanity.sqlite"
 
 DELETE_DB = True
 
+
 class TestDevelopment(unittest.TestCase):
 
     def setUp(self):
@@ -68,22 +69,22 @@ class TestDevelopment(unittest.TestCase):
         current_function = inspect.stack()[0][3]
 
         data = {
-            "test_name" : "test name",
-            "series_name" : current_function,
-            "batch_timestamp" : datetime.datetime(2017,12,12),
-            "test_result" : "PASS",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1",
-            "metadata" : "some metadata"
+            "test_name": "test name",
+            "series_name": current_function,
+            "batch_timestamp": datetime.datetime(2017, 12, 12),
+            "test_result": "PASS",
+            "vcs_system": "git",
+            "vcs_revision": "somesha1",
+            "metadata": "some metadata"
         }
 
-        first = models.test_result.TestResult(**data);
+        first = models.test_result.TestResult(**data)
         first.db_save()
 
         db_dbg = common.database.Database.get_debug()
         self.assertEqual(db_dbg.countTest, 1)
 
-        duplicate = models.test_result.TestResult(**data);
+        duplicate = models.test_result.TestResult(**data)
         duplicate.db_save()
 
         db_dbg = common.database.Database.get_debug()
@@ -100,19 +101,19 @@ class TestDevelopment(unittest.TestCase):
         current_function = inspect.stack()[0][3]
 
         data = {
-            "test_name" : "test name",
-            "series_name" : current_function,
-            "batch_timestamp" : datetime.datetime(2015,10,15),
-            "test_result" : "SKIP",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1",
-            "metadata" : "some metadata"
+            "test_name": "test name",
+            "series_name": current_function,
+            "batch_timestamp": datetime.datetime(2015, 10, 15),
+            "test_result": "SKIP",
+            "vcs_system": "git",
+            "vcs_revision": "somesha1",
+            "metadata": "some metadata"
         }
 
-        first = models.test_result.TestResult(**data);
+        first = models.test_result.TestResult(**data)
         first.db_save()
 
-        duplicate = models.test_result.TestResult(**data);
+        duplicate = models.test_result.TestResult(**data)
         duplicate.db_save()
 
         self.assertEqual(first, duplicate)
@@ -170,22 +171,22 @@ class TestDevelopment(unittest.TestCase):
         current_function = inspect.stack()[0][3]
 
         data = {
-            "test_name" : "test name_1",
-            "series_name" : current_function,
-            "batch_timestamp" : datetime.datetime(2017,12,12),
-            "test_result" : "PASS",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1",
-            "metadata" : "some metadata"
+            "test_name": "test name_1",
+            "series_name": current_function,
+            "batch_timestamp": datetime.datetime(2017, 12, 12),
+            "test_result": "PASS",
+            "vcs_system": "git",
+            "vcs_revision": "somesha1",
+            "metadata": "some metadata"
         }
 
-        first = models.test_result.TestResult(**data);
+        first = models.test_result.TestResult(**data)
         first.db_save()
 
         data["test_name"] = "test_name_2"
         data["test_result"] = "FAIL"
 
-        second = models.test_result.TestResult(**data);
+        second = models.test_result.TestResult(**data)
         second.db_save()
 
         retrieved_first = models.test_result.TestResult.get_by_id(first.test_id)
@@ -196,26 +197,25 @@ class TestDevelopment(unittest.TestCase):
 
     def test_history_passing(self):
         data = {
-            "test_name" : "test_name",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1",
-            "metadata" : "some metadata"
+            "test_name": "test_name",
+            "vcs_system": "git",
+            "vcs_revision": "somesha1",
+            "metadata": "some metadata"
         }
 
         ########################################################################
-        # Most recent test failing 
+        # Most recent test failing
         ########################################################################
         data["series_name"] = "most recent failing"
         data["test_result"] = "PASS"
 
-        for day in range(1,11):
+        for day in range(1, 11):
             if day is 10:
                 data["test_result"] = "FAIL"
 
-            data["batch_timestamp"] = datetime.datetime(1990,1,day)
+            data["batch_timestamp"] = datetime.datetime(1990, 1, day)
             test = models.test_result.TestResult(**data)
             test.db_save()
-
 
         hist = models.test_history.TestHistory(data["series_name"],
                                                data["test_name"])
@@ -223,17 +223,17 @@ class TestDevelopment(unittest.TestCase):
         self.assertEqual(hist.state, models.test_history.TestState.newly_failing)
 
         ########################################################################
-        # Most recent test passing 
+        # Most recent test passing
         ########################################################################
         data["series_name"] = "most recent passing"
         data["test_result"] = "FAIL"
 
-        for day in range(1,11):
+        for day in range(1, 11):
             if day is 10:
                 data["test_result"] = "PASS"
 
-            data["batch_timestamp"] = datetime.datetime(1990,1,day)
-            test = models.test_result.TestResult(**data);
+            data["batch_timestamp"] = datetime.datetime(1990, 1, day)
+            test = models.test_result.TestResult(**data)
             test.db_save()
 
         hist = models.test_history.TestHistory(data["series_name"],
@@ -242,19 +242,19 @@ class TestDevelopment(unittest.TestCase):
         self.assertEqual(hist.state, models.test_history.TestState.passing)
 
         ########################################################################
-        # Most recent test skip, failing 
+        # Most recent test skip, failing
         ########################################################################
         data["series_name"] = "most recent skip, fail"
         data["test_result"] = "PASS"
 
-        for day in range(1,11):
+        for day in range(1, 11):
             if day is 10:
                 data["test_result"] = "SKIP"
             elif day is 9:
                 data["test_result"] = "FAIL"
 
-            data["batch_timestamp"] = datetime.datetime(1990,1,day)
-            test = models.test_result.TestResult(**data);
+            data["batch_timestamp"] = datetime.datetime(1990, 1, day)
+            test = models.test_result.TestResult(**data)
             test.db_save()
 
         hist = models.test_history.TestHistory(data["series_name"],
@@ -263,19 +263,19 @@ class TestDevelopment(unittest.TestCase):
         self.assertEqual(hist.state, models.test_history.TestState.newly_failing)
 
         ########################################################################
-        # Most recent test skip, passing 
+        # Most recent test skip, passing
         ########################################################################
         data["series_name"] = "most recent skip, pass"
         data["test_result"] = "FAIL"
 
-        for day in range(1,11):
+        for day in range(1, 11):
             if day is 10:
                 data["test_result"] = "SKIP"
             elif day is 9:
                 data["test_result"] = "PASS"
 
-            data["batch_timestamp"] = datetime.datetime(1990,1,day)
-            test = models.test_result.TestResult(**data);
+            data["batch_timestamp"] = datetime.datetime(1990, 1, day)
+            test = models.test_result.TestResult(**data)
             test.db_save()
 
         hist = models.test_history.TestHistory(data["series_name"],
@@ -290,9 +290,9 @@ class TestDevelopment(unittest.TestCase):
         data["series_name"] = "all skipped"
         data["test_result"] = "SKIP"
 
-        for day in range(1,11):
-            data["batch_timestamp"] = datetime.datetime(1990,1,day)
-            test = models.test_result.TestResult(**data);
+        for day in range(1, 11):
+            data["batch_timestamp"] = datetime.datetime(1990, 1, day)
+            test = models.test_result.TestResult(**data)
             test.db_save()
 
         hist = models.test_history.TestHistory(data["series_name"],
@@ -300,37 +300,36 @@ class TestDevelopment(unittest.TestCase):
 
         self.assertEqual(hist.state, models.test_history.TestState.skipped)
 
-
     def test_json_list(self):
 
         result_data = [
-        {
-            "test_name" : "test name_1",
-            "series_name" : "posted_data",
-            "batch_timestamp" : str(datetime.datetime(2018,1,1)),
-            "test_result" : "PASS",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1",
-            "metadata" : "some metadata"
-        },
-        {
-            "test_name" : "test name_1",
-            "series_name" : "posted_data",
-            "batch_timestamp" : str(datetime.datetime(2018,1,2)),
-            "test_result" : "PASS",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1",
-            "metadata" : "some metadata"
-        },
-        {
-            "test_name" : "test name_1",
-            "series_name" : "posted_data",
-            "batch_timestamp" : str(datetime.datetime(2018,1,3)),
-            "test_result" : "PASS",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1",
-            "metadata" : "some metadata"
-        },
+            {
+                "test_name": "test name_1",
+                "series_name": "posted_data",
+                "batch_timestamp": str(datetime.datetime(2018, 1, 1)),
+                "test_result": "PASS",
+                "vcs_system": "git",
+                "vcs_revision": "somesha1",
+                "metadata": "some metadata"
+            },
+            {
+                "test_name": "test name_1",
+                "series_name": "posted_data",
+                "batch_timestamp": str(datetime.datetime(2018, 1, 2)),
+                "test_result": "PASS",
+                "vcs_system": "git",
+                "vcs_revision": "somesha1",
+                "metadata": "some metadata"
+            },
+            {
+                "test_name": "test name_1",
+                "series_name": "posted_data",
+                "batch_timestamp": str(datetime.datetime(2018, 1, 3)),
+                "test_result": "PASS",
+                "vcs_system": "git",
+                "vcs_revision": "somesha1",
+                "metadata": "some metadata"
+            },
         ]
 
         json_data = json.dumps(result_data)
@@ -346,13 +345,13 @@ class TestDevelopment(unittest.TestCase):
     def test_json_not_list(self):
 
         result_data = {
-            "test_name" : "test name_1_json",
-            "series_name" : "json_not_list",
-            "batch_timestamp" : str(datetime.datetime(1990,1,1)),
-            "test_result" : "FAIL",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1",
-            "metadata" : "some metadata"
+            "test_name": "test name_1_json",
+            "series_name": "json_not_list",
+            "batch_timestamp": str(datetime.datetime(1990, 1, 1)),
+            "test_result": "FAIL",
+            "vcs_system": "git",
+            "vcs_revision": "somesha1",
+            "metadata": "some metadata"
         }
 
         json_data = json.dumps(result_data)
@@ -378,16 +377,16 @@ class TestDevelopment(unittest.TestCase):
         ########################################################################
 
         data = {
-            "test_name" : "deleting_this",
-            "series_name" : "single_delete",
-            "batch_timestamp" : datetime.datetime(2018,1,1),
-            "test_result" : "PASS",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1",
-            "metadata" : "some metadata"
+            "test_name": "deleting_this",
+            "series_name": "single_delete",
+            "batch_timestamp": datetime.datetime(2018, 1, 1),
+            "test_result": "PASS",
+            "vcs_system": "git",
+            "vcs_revision": "somesha1",
+            "metadata": "some metadata"
         }
 
-        first = models.test_result.TestResult(**data);
+        first = models.test_result.TestResult(**data)
         first.db_save()
 
         db_dbg = common.database.Database.get_debug()
@@ -405,34 +404,34 @@ class TestDevelopment(unittest.TestCase):
         self.assertEqual(db_dbg.countSeries, 0)
         self.assertEqual(db_dbg.countVcs, 0)
         self.assertEqual(db_dbg.countMetadata, 0)
- 
+
     def test_delete_two_independant(self):
         ########################################################################
         # Add two entries, all different. delete one, delete other
         ########################################################################
         data_1 = {
-            "test_name" : "deleting_this_1",
-            "series_name" : "double_delete_1",
-            "batch_timestamp" : datetime.datetime(2018,1,1),
-            "test_result" : "PASS",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1_1",
-            "metadata" : "some metadata_1"
+            "test_name": "deleting_this_1",
+            "series_name": "double_delete_1",
+            "batch_timestamp": datetime.datetime(2018, 1, 1),
+            "test_result": "PASS",
+            "vcs_system": "git",
+            "vcs_revision": "somesha1_1",
+            "metadata": "some metadata_1"
         }
         data_2 = {
-            "test_name" : "deleting_this_2",
-            "series_name" : "double_delete_2",
-            "batch_timestamp" : datetime.datetime(2018,1,2),
-            "test_result" : "PASS",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1_2",
-            "metadata" : "some metadata_2"
+            "test_name": "deleting_this_2",
+            "series_name": "double_delete_2",
+            "batch_timestamp": datetime.datetime(2018, 1, 2),
+            "test_result": "PASS",
+            "vcs_system": "git",
+            "vcs_revision": "somesha1_2",
+            "metadata": "some metadata_2"
         }
 
-        first = models.test_result.TestResult(**data_1);
+        first = models.test_result.TestResult(**data_1)
         first.db_save()
 
-        second = models.test_result.TestResult(**data_2);
+        second = models.test_result.TestResult(**data_2)
         second.db_save()
 
         db_dbg = common.database.Database.get_debug()
@@ -453,7 +452,7 @@ class TestDevelopment(unittest.TestCase):
 
         retrieved_scond = models.test_result.TestResult.get_by_id(second.test_id)
         self.assertEqual(second, retrieved_scond)
-    
+
         second.db_delete()
 
         db_dbg = common.database.Database.get_debug()
@@ -468,22 +467,22 @@ class TestDevelopment(unittest.TestCase):
         # Add two entries, shared config. delete one. shared data should persist
         ########################################################################
         data_1 = {
-            "test_name" : "deleting_this_1",
-            "series_name" : "double_delete_1",
-            "batch_timestamp" : datetime.datetime(2018,1,1),
-            "test_result" : "PASS",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1_1",
-            "metadata" : "some metadata_1"
+            "test_name": "deleting_this_1",
+            "series_name": "double_delete_1",
+            "batch_timestamp": datetime.datetime(2018, 1, 1),
+            "test_result": "PASS",
+            "vcs_system": "git",
+            "vcs_revision": "somesha1_1",
+            "metadata": "some metadata_1"
         }
 
         data_2 = dict(data_1)
         data_2["test_name"] = "deleting_this_2"
 
-        first = models.test_result.TestResult(**data_1);
+        first = models.test_result.TestResult(**data_1)
         first.db_save()
 
-        second = models.test_result.TestResult(**data_2);
+        second = models.test_result.TestResult(**data_2)
         second.db_save()
 
         db_dbg = common.database.Database.get_debug()
@@ -504,7 +503,7 @@ class TestDevelopment(unittest.TestCase):
 
         retrieved_scond = models.test_result.TestResult.get_by_id(second.test_id)
         self.assertEqual(second, retrieved_scond)
-    
+
         second.db_delete()
 
         db_dbg = common.database.Database.get_debug()
@@ -514,20 +513,18 @@ class TestDevelopment(unittest.TestCase):
         self.assertEqual(db_dbg.countVcs, 0)
         self.assertEqual(db_dbg.countMetadata, 0)
 
-
     def test_no_optional_data(self):
         data_1 = {
-            "test_name" : "deleting_this_1",
-            "series_name" : "double_delete_1",
-            "batch_timestamp" : datetime.datetime(2018,1,1),
-            "test_result" : "PASS",
+            "test_name": "deleting_this_1",
+            "series_name": "double_delete_1",
+            "batch_timestamp": datetime.datetime(2018, 1, 1),
+            "test_result": "PASS",
         }
 
-        first = models.test_result.TestResult(**data_1);
+        first = models.test_result.TestResult(**data_1)
         first.db_save()
 
         retrieved = models.test_history.TestHistory(data_1["series_name"],
                                                     data_1["test_name"])
 
         self.assertEqual(len(retrieved.tests), 1)
-

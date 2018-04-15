@@ -33,12 +33,14 @@ import unittest
 import os
 import json
 
+
 logger = logging.getLogger()
 logging.basicConfig()
 logger.setLevel(logging.DEBUG)
 
 TEST_DATABASE_PATH = "test/data/test_history_cleanup.sqlite"
 DELETE_DB = True
+
 
 class TestCleanup(unittest.TestCase):
 
@@ -68,18 +70,18 @@ class TestCleanup(unittest.TestCase):
         entries_to_add = 11
 
         template = {
-            "test_name" : "test name",
-            "series_name" : "posted_data",
-            "test_result" : "PASS",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1",
-            "metadata" : "some metadata"
+            "test_name": "test name",
+            "series_name": "posted_data",
+            "test_result": "PASS",
+            "vcs_system": "git",
+            "vcs_revision": "somesha1",
+            "metadata": "some metadata"
         }
 
         initial_test_data = []
         for i in range(1, entries_to_add + 1):
             temp = dict(template)
-            temp["batch_timestamp"] = str(datetime.datetime(2018,1,i))
+            temp["batch_timestamp"] = str(datetime.datetime(2018, 1, i))
             initial_test_data.append(temp)
 
         json_data = json.dumps(initial_test_data)
@@ -129,7 +131,6 @@ class TestCleanup(unittest.TestCase):
         for i in range(target_length):
             self.assertTrue(retrieved.tests[i].compare_values(**next(newest_first)))
 
-
         # TODO XXX what happens to reference to deleted object? Do we set
         # everything to None?
 
@@ -137,24 +138,24 @@ class TestCleanup(unittest.TestCase):
         entries_to_add = 11
 
         template = {
-            "test_name" : "test name",
-            "series_name" : "posted_data",
-            "test_result" : "FAIL",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1",
-            "metadata" : "some metadata"
+            "test_name": "test name",
+            "series_name": "posted_data",
+            "test_result": "FAIL",
+            "vcs_system": "git",
+            "vcs_revision": "somesha1",
+            "metadata": "some metadata"
         }
 
         initial_test_data = []
 
         temp = dict(template)
-        temp["batch_timestamp"] = str(datetime.datetime(2018,1,1))
+        temp["batch_timestamp"] = str(datetime.datetime(2018, 1, 1))
         temp["test_result"] = "PASS"
         initial_test_data.append(temp)
 
         for i in range(2, entries_to_add + 1):
             temp = dict(template)
-            temp["batch_timestamp"] = str(datetime.datetime(2018,1,i))
+            temp["batch_timestamp"] = str(datetime.datetime(2018, 1, i))
             initial_test_data.append(temp)
 
         json_data = json.dumps(initial_test_data)
@@ -214,15 +215,15 @@ class TestCleanup(unittest.TestCase):
         entries_to_add = 11
 
         template = {
-            "test_name" : "test name",
-            "series_name" : "posted_data",
-            "test_result" : "FAIL",
+            "test_name": "test name",
+            "series_name": "posted_data",
+            "test_result": "FAIL",
         }
 
         initial_test_data = []
         for i in range(1, entries_to_add + 1):
             temp = dict(template)
-            temp["batch_timestamp"] = str(datetime.datetime(2000,1,i))
+            temp["batch_timestamp"] = str(datetime.datetime(2000, 1, i))
             initial_test_data.append(temp)
 
         json_data = json.dumps(initial_test_data)
@@ -274,7 +275,6 @@ class TestCleanup(unittest.TestCase):
         for i in range(target_length):
             self.assertTrue(retrieved.tests[i].compare_values(**next(newest_first)))
 
-
     # 20 tests, first test and last test are passes
     # Keep 9 tests.
     # Oldest 11 tests should be deleted - 1 pass and 8 skips remain
@@ -282,15 +282,15 @@ class TestCleanup(unittest.TestCase):
         entries_to_add = 20
 
         template = {
-            "test_name" : "test name",
-            "series_name" : "posted_data",
-            "test_result" : "SKIP"
+            "test_name": "test name",
+            "series_name": "posted_data",
+            "test_result": "SKIP"
         }
 
         initial_test_data = []
         for i in range(1, entries_to_add + 1):
             temp = dict(template)
-            temp["batch_timestamp"] = str(datetime.datetime(2000,1,i))
+            temp["batch_timestamp"] = str(datetime.datetime(2000, 1, i))
             initial_test_data.append(temp)
 
         initial_test_data[0]["test_result"] = "PASS"
@@ -321,7 +321,7 @@ class TestCleanup(unittest.TestCase):
         db_dbg = common.database.Database.get_debug()
         self.assertEqual(db_dbg.countTest, target_length)
 
-        newest_first = initial_test_data[-target_length : ]
+        newest_first = initial_test_data[-target_length:]
         logger.error("len(newest_first): " + str(len(newest_first)))
         self.assertTrue(len(newest_first) == len(retrieved.tests))
         newest_first = reversed(initial_test_data)
@@ -336,15 +336,15 @@ class TestCleanup(unittest.TestCase):
         entries_to_add = 20
 
         template = {
-            "test_name" : "test name",
-            "series_name" : "posted_data",
-            "test_result" : "PASS"
+            "test_name": "test name",
+            "series_name": "posted_data",
+            "test_result": "PASS"
         }
 
         initial_test_data = []
         for i in range(1, entries_to_add + 1):
             temp = dict(template)
-            temp["batch_timestamp"] = str(datetime.datetime(2000,1,i))
+            temp["batch_timestamp"] = str(datetime.datetime(2000, 1, i))
             initial_test_data.append(temp)
 
         initial_test_data[0]["test_result"] = "SKIP"
@@ -375,13 +375,12 @@ class TestCleanup(unittest.TestCase):
         db_dbg = common.database.Database.get_debug()
         self.assertEqual(db_dbg.countTest, target_length)
 
-        newest_first = initial_test_data[-target_length : ]
+        newest_first = initial_test_data[-target_length:]
         self.assertTrue(len(newest_first) == len(retrieved.tests))
         newest_first = reversed(initial_test_data)
 
         for i in range(target_length):
             self.assertTrue(retrieved.tests[i].compare_values(**next(newest_first)))
-            
 
     # 10 tests oldest is pass, then fail. Newest 8 skip
     # Keep 5 tests:
@@ -389,18 +388,19 @@ class TestCleanup(unittest.TestCase):
     # Keep 2 tests:
     #   Expect fail, pass
     def test_recent_all_skips(self):
+
         entries_to_add = 10
 
         template = {
-            "test_name" : "test name",
-            "series_name" : "posted_data",
-            "test_result" : "SKIP"
+            "test_name": "test name",
+            "series_name": "posted_data",
+            "test_result": "SKIP"
         }
 
         initial_test_data = []
         for i in range(1, entries_to_add + 1):
             temp = dict(template)
-            temp["batch_timestamp"] = str(datetime.datetime(2000,1,i))
+            temp["batch_timestamp"] = str(datetime.datetime(2000, 1, i))
             initial_test_data.append(temp)
 
         initial_test_data[0]["test_result"] = "PASS"
@@ -459,7 +459,5 @@ class TestCleanup(unittest.TestCase):
         self.assertEqual(len(newest_first), len(retrieved.tests))
         newest_first = iter(newest_first)
 
-
         for i in range(target_length):
             self.assertTrue(retrieved.tests[i].compare_values(**next(newest_first)))
-

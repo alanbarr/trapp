@@ -39,6 +39,7 @@ TEST_DATABASE_PATH = "test/data/test_history_stablitiy.sqlite"
 
 DELETE_DB = True
 
+
 class TestHistoryStablitiy(unittest.TestCase):
 
     def setUp(self):
@@ -65,24 +66,23 @@ class TestHistoryStablitiy(unittest.TestCase):
 
     def test_history_stablility(self):
 
-    ############################################################################
-    # All passing should be stable
-    ############################################################################
+        ########################################################################
+        # All passing should be stable
+        ########################################################################
         data = {
-            "test_name" : "test_name",
-            "series_name" : "stable_series",
-            "batch_timestamp" : datetime.datetime(1990,1,1),
-            "test_result" : "PASS",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1",
-            "metadata" : "some metadata"
+            "test_name": "test_name",
+            "series_name": "stable_series",
+            "batch_timestamp": datetime.datetime(1990, 1, 1),
+            "test_result": "PASS",
+            "vcs_system": "git",
+            "vcs_revision": "somesha1",
+            "metadata": "some metadata"
         }
 
-        for day in range(1,11):
-            data["batch_timestamp"] = datetime.datetime(1990,1,day)
-            test = models.test_result.TestResult(**data);
+        for day in range(1, 11):
+            data["batch_timestamp"] = datetime.datetime(1990, 1, day)
+            test = models.test_result.TestResult(**data)
             test.db_save()
-
 
         hist = models.test_history.TestHistory(data["series_name"],
                                                data["test_name"])
@@ -91,24 +91,23 @@ class TestHistoryStablitiy(unittest.TestCase):
 
         self.assertEqual(hist.is_stable, True)
 
-    ############################################################################
-    # All failing should be not be stable
-    ############################################################################
+        ########################################################################
+        # All failing should be not be stable
+        ########################################################################
         data = {
-            "test_name" : "test_name",
-            "series_name" : "stable_series_but_failing",
-            "batch_timestamp" : datetime.datetime(1990,1,1),
-            "test_result" : "FAIL",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1",
-            "metadata" : "some metadata"
+            "test_name": "test_name",
+            "series_name": "stable_series_but_failing",
+            "batch_timestamp": datetime.datetime(1990, 1, 1),
+            "test_result": "FAIL",
+            "vcs_system": "git",
+            "vcs_revision": "somesha1",
+            "metadata": "some metadata"
         }
 
-        for day in range(1,11):
-            data["batch_timestamp"] = datetime.datetime(1990,1,day)
-            test = models.test_result.TestResult(**data);
+        for day in range(1, 11):
+            data["batch_timestamp"] = datetime.datetime(1990, 1, day)
+            test = models.test_result.TestResult(**data)
             test.db_save()
-
 
         hist = models.test_history.TestHistory(data["series_name"],
                                                data["test_name"])
@@ -116,31 +115,30 @@ class TestHistoryStablitiy(unittest.TestCase):
         self.assertEqual(hist.is_stable, False)
         self.assertEqual(hist.state, models.test_history.TestState.always_failing)
 
-    ############################################################################
-    # 3 Out of 10 should be unstable
-    ############################################################################
+        ########################################################################
+        # 3 Out of 10 should be unstable
+        ########################################################################
 
         data = {
-            "test_name" : "test_name",
-            "series_name" : "unstable_series",
-            "batch_timestamp" : datetime.datetime(1990,1,1),
-            "test_result" : "PASS",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1",
-            "metadata" : "some metadata"
+            "test_name": "test_name",
+            "series_name": "unstable_series",
+            "batch_timestamp": datetime.datetime(1990, 1, 1),
+            "test_result": "PASS",
+            "vcs_system": "git",
+            "vcs_revision": "somesha1",
+            "metadata": "some metadata"
         }
 
-        for day in range(1,11):
+        for day in range(1, 11):
             if day is 2 or day is 4 or day is 6:
                 data["test_result"] = "FAIL"
             else:
                 data["test_result"] = "PASS"
 
-            data["batch_timestamp"] = datetime.datetime(1990,1,day)
+            data["batch_timestamp"] = datetime.datetime(1990, 1, day)
             data["test_name"] = "test_unstable"
-            test = models.test_result.TestResult(**data);
+            test = models.test_result.TestResult(**data)
             test.db_save()
-
 
         hist = models.test_history.TestHistory(data["series_name"],
                                                data["test_name"])
@@ -148,34 +146,32 @@ class TestHistoryStablitiy(unittest.TestCase):
         self.assertEqual(hist.state, models.test_history.TestState.passing)
         self.assertEqual(hist.is_stable, False)
 
-    ############################################################################
-    # 2 Out of 10 should be stable ???
-    ############################################################################
+        ########################################################################
+        # 2 Out of 10 should be stable ???
+        ########################################################################
         data = {
-            "test_name" : "test_name",
-            "series_name" : "just_stable_10",
-            "batch_timestamp" : datetime.datetime(1990,1,1),
-            "test_result" : "PASS",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1",
-            "metadata" : "some metadata"
+            "test_name": "test_name",
+            "series_name": "just_stable_10",
+            "batch_timestamp": datetime.datetime(1990, 1, 1),
+            "test_result": "PASS",
+            "vcs_system": "git",
+            "vcs_revision": "somesha1",
+            "metadata": "some metadata"
         }
 
-        for day in range(1,11):
+        for day in range(1, 11):
             if day is 2 or day is 10:
                 data["test_result"] = "FAIL"
             else:
                 data["test_result"] = "PASS"
 
-            data["batch_timestamp"] = datetime.datetime(1990,1,day)
+            data["batch_timestamp"] = datetime.datetime(1990, 1, day)
             data["test_name"] = "test_unstable"
-            test = models.test_result.TestResult(**data);
+            test = models.test_result.TestResult(**data)
             test.db_save()
-
 
         hist = models.test_history.TestHistory(data["series_name"],
                                                data["test_name"])
 
         self.assertEqual(hist.state, models.test_history.TestState.newly_failing)
         self.assertEqual(hist.is_stable, True)
-

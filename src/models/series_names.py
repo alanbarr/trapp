@@ -29,8 +29,9 @@ import logging
 
 logger = logging.getLogger()
 
+
 class SeriesNames(object):
     @staticmethod
     def get_all():
-        return Database.query_rows("""
-            SELECT Series.series_name FROM Series ORDER BY Series.series_name""")
+        return Database.query_rows("""SELECT Series.series_name FROM Series
+                                   ORDER BY Series.series_name""")

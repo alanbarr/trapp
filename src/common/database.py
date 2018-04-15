@@ -30,7 +30,7 @@ import os
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS Vcs (
-    vcs_id          INTEGER PRIMARY KEY, 
+    vcs_id          INTEGER PRIMARY KEY,
     vcs_system      TEXT NOT NULL,
     vcs_revision    TEXT NOT NULL,
 
@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS Vcs (
 );
 
 CREATE TABLE IF NOT EXISTS Series (
-    series_id       INTEGER PRIMARY KEY NOT NULL, 
+    series_id       INTEGER PRIMARY KEY NOT NULL,
     series_name     TEXT UNIQUE NOT NULL
 );
 
@@ -47,8 +47,8 @@ CREATE TABLE IF NOT EXISTS Metadata (
     metadata        TEXT UNIQUE
 );
 
-CREATE TABLE IF NOT EXISTS Batch ( 
-    batch_id        INTEGER PRIMARY KEY, 
+CREATE TABLE IF NOT EXISTS Batch (
+    batch_id        INTEGER PRIMARY KEY,
     batch_timestamp TIMESTAMP NOT NULL,
     series_id       INTEGER NOT NULL,
     vcs_id          INTEGER,
@@ -81,6 +81,7 @@ class DatabaseDebug(object):
     def __init__(self, **kwds):
         self.__dict__ = kwds
 
+
 class Database(object):
 
     _conn = None
@@ -94,11 +95,11 @@ class Database(object):
 
         directory = os.path.dirname(database_file)
         if not os.path.exists(directory):
-            logger.debug("Creating database path: {}".format(directory));
+            logger.debug("Creating database path: {}".format(directory))
             os.makedirs(directory)
 
-        cls._conn = sqlite3.connect(database = database_file,
-                                    detect_types = sqlite3.PARSE_DECLTYPES)
+        cls._conn = sqlite3.connect(database=database_file,
+                                    detect_types=sqlite3.PARSE_DECLTYPES)
 
         cur = cls._conn.cursor()
         cur.executescript(SCHEMA)
@@ -132,13 +133,12 @@ class Database(object):
         result = cur.fetchall()
         return result
 
-
     @classmethod
     def execute(cls, command, args=()):
         cur = cls._conn.cursor()
         cur.execute(command, args)
 
-        if cls._is_batch == False:
+        if cls._is_batch is False:
             cls._conn.commit()
 
         return cur.lastrowid
@@ -163,6 +163,3 @@ class Database(object):
     def end_batch(cls):
         cls._conn.commit()
         cls._is_batch = False
-
-
-

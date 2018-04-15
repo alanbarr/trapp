@@ -32,13 +32,15 @@ from models.series_summary import SeriesSummary
 from models.series_names import SeriesNames
 from models.batch import add_batch
 from common.database import Database
-import flask_table 
+import flask_table
 from flask import Flask, render_template, url_for, request
 
 logger = logging.getLogger()
 
+
 class FormattedTable(flask_table.Table):
     classes = ["table table-striped"]
+
 
 def create_logger(level, log_file=None, log_to_stdout=False):
 
@@ -48,7 +50,7 @@ def create_logger(level, log_file=None, log_to_stdout=False):
 
     log_dir = os.path.dirname(log_file)
     if not os.path.exists(log_dir):
-        logger.debug("Creating path for logs: {}".format(log_dir));
+        logger.debug("Creating path for logs: {}".format(log_dir))
         os.makedirs(log_dir)
 
     if log_file:
@@ -77,17 +79,21 @@ app.config.from_object("config")
 
 create_logger(app.config["LOG_LEVEL"], app.config["LOG_FILE"])
 
+
 @app.before_first_request
 def db_initalise():
     Database.initialise(app.config["DATABASE"])
+
 
 @app.route("/debug")
 def route_debug():
     return "debug"
 
+
 @app.route("/echo:<string>")
 def route_echo(string):
     return render_template("echo.jinja2", echo_string=string)
+
 
 @app.route("/")
 @app.route("/results")
@@ -97,13 +103,16 @@ def route_view_results():
     all_series = [dict(series_name=x[0]) for x in all_series]
 
     class SeriesTable(FormattedTable):
-        series_name = flask_table.LinkCol("Series",
-                                          "route_view_results_series_landing",
-                                          url_kwargs=dict(series_name="series_name"),
-                                          attr_list="series_name")
+        series_name = flask_table.LinkCol(
+                        "Series",
+                        "route_view_results_series_landing",
+                        url_kwargs=dict(series_name="series_name"),
+                        attr_list="series_name")
+
     table = SeriesTable(all_series)
 
-    return render_template("series_selection.jinja2", series_list=table.__html__())
+    return render_template("series_selection.jinja2",
+                           series_list=table.__html__())
 
 
 # TODO can the below two methods be tidied up / combined?
@@ -114,14 +123,14 @@ def route_view_results_series_for_type(series_name, result_type):
                            app.config["DAYS_UNTIL_TEST_RESULT_STALE"])
 
     types = {
-        "newly_failing" : ("Newly Failing Tests",
-                           series.get_newly_failing_test_table()),
-        "passing"  : ("Currently Passing Tests",
-                      series.get_passing_test_table()),
-        "always_failing" : ("Always Failing Tests",
-                     series.get_always_failing_test_table()),
-        "stale" : ("State Tests / Tests Not Recently Run",
-                    series.get_stale_test_table())
+        "newly_failing": ("Newly Failing Tests",
+                          series.get_newly_failing_test_table()),
+        "passing": ("Currently Passing Tests",
+                    series.get_passing_test_table()),
+        "always_failing": ("Always Failing Tests",
+                           series.get_always_failing_test_table()),
+        "stale": ("State Tests / Tests Not Recently Run",
+                  series.get_stale_test_table())
     }
 
     title, table = types[result_type]
@@ -130,6 +139,7 @@ def route_view_results_series_for_type(series_name, result_type):
                            series_name=series_name,
                            title=title,
                            table=table)
+
 
 @app.route("/results/series/<path:series_name>")
 def route_view_results_series_landing(series_name):
@@ -146,27 +156,30 @@ def route_view_results_series_landing(series_name):
                           result_type="passing")
 
     always_failing_url = url_for(endpoint="route_view_results_series_for_type",
-                          series_name=series_name,
-                          result_type="always_failing")
+                                 series_name=series_name,
+                                 result_type="always_failing")
 
     stale_url = url_for(endpoint="route_view_results_series_for_type",
                         series_name=series_name,
                         result_type="stale")
 
-    (newly_failing_stable_count, newly_failing_total_count) = series.get_count_newly_failing_tests()
+    (newly_failing_stable_count,
+     newly_failing_total_count) = series.get_count_newly_failing_tests()
 
-    return render_template("results_for_series_links.jinja2",
-                           series_name=series_name,
-                           total_tests=series.get_count_test_histories(),
-                           newly_failing_url=newly_failing_url,
-                           newly_failing_stable_count = newly_failing_stable_count,
-                           newly_failing_total_count = newly_failing_total_count,
-                           passing_url=passing_url,
-                           passing_count=series.get_count_passing_tests(),
-                           always_failing_url=always_failing_url,
-                           always_failing_count=series.get_count_always_failing_tests(),
-                           stale_url=stale_url,
-                           stale_count=series.get_count_not_recently_run_tests())
+    return render_template(
+            "results_for_series_links.jinja2",
+            series_name=series_name,
+            total_tests=series.get_count_test_histories(),
+            newly_failing_url=newly_failing_url,
+            newly_failing_stable_count=newly_failing_stable_count,
+            newly_failing_total_count=newly_failing_total_count,
+            passing_url=passing_url,
+            passing_count=series.get_count_passing_tests(),
+            always_failing_url=always_failing_url,
+            always_failing_count=series.get_count_always_failing_tests(),
+            stale_url=stale_url,
+            stale_count=series.get_count_not_recently_run_tests())
+
 
 @app.route("/results/series/<path:series_name>/test/<path:test_name>")
 def route_view_results_series_test(series_name, test_name):
@@ -184,22 +197,24 @@ def route_view_results_series_test(series_name, test_name):
     table = ItemTable(history.tests)
 
     return render_template("results_for_single_test_in_series.jinja2",
-                            series_name=series_name, 
-                            test_name=test_name, 
-                            is_stable=history.is_stable,
-                            history_table=table.__html__())
+                           series_name=series_name,
+                           test_name=test_name,
+                           is_stable=history.is_stable,
+                           history_table=table.__html__())
+
 
 @app.route("/add_result", methods=["POST"])
 def route_add_result():
 
     py_data = request.get_json()
 
-    add_batch(py_data,app.config["TEST_HISTORY_SIZE"])
+    add_batch(py_data, app.config["TEST_HISTORY_SIZE"])
 
     return "OK"
 
+
 def create_table(series_name):
-    
+
     x = TestHistory(series_name, "test_name")
 
     class ItemTable(FormattedTable):

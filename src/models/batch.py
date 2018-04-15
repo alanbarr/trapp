@@ -31,6 +31,7 @@ from common.database import Database
 
 logger = logging.getLogger()
 
+
 def add_batch(json_data, limit_test_results):
 
     if isinstance(json_data, str):
@@ -54,5 +55,3 @@ def add_batch(json_data, limit_test_results):
             result = TestResult(**entry)
             history = TestHistory(result.series_name, result.test_name)
             history.cleanup_db(limit_test_results)
-
-

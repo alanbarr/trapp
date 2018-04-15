@@ -39,6 +39,7 @@ TEST_DATABASE_PATH = "test/data/test_timestamp_format.sqlite"
 
 DELETE_DB = True
 
+
 class TestTimestampFormat(unittest.TestCase):
 
     def setUp(self):
@@ -66,11 +67,11 @@ class TestTimestampFormat(unittest.TestCase):
     def get_basic_result_data(self, series_name):
 
         data = {
-            "test_name" : "test name",
-            "test_result" : "SKIP",
-            "vcs_system" : "git",
-            "vcs_revision" : "somesha1",
-            "metadata" : "some metadata"
+            "test_name": "test name",
+            "test_result": "SKIP",
+            "vcs_system": "git",
+            "vcs_revision": "somesha1",
+            "metadata": "some metadata"
         }
 
         rtn = data.copy()
@@ -82,7 +83,7 @@ class TestTimestampFormat(unittest.TestCase):
         current_function = inspect.stack()[0][3]
         data = self.get_basic_result_data(current_function)
 
-        dt = datetime.datetime(2000,10,15)
+        dt = datetime.datetime(2000, 10, 15)
         data["batch_timestamp"] = dt.isoformat(sep="T")
 
         first = TestResult(**data)
@@ -96,7 +97,7 @@ class TestTimestampFormat(unittest.TestCase):
         current_function = inspect.stack()[0][3]
         data = self.get_basic_result_data(current_function)
 
-        dt = datetime.datetime(2001,10,15)
+        dt = datetime.datetime(2001, 10, 15)
         data["batch_timestamp"] = dt.isoformat(sep=" ")
 
         first = TestResult(**data)
@@ -110,7 +111,7 @@ class TestTimestampFormat(unittest.TestCase):
         current_function = inspect.stack()[0][3]
         data = self.get_basic_result_data(current_function)
 
-        dt = datetime.datetime(2001,10,15,12,59,59,100)
+        dt = datetime.datetime(2001, 10, 15, 12, 59, 59, 100)
         data["batch_timestamp"] = dt.isoformat(sep=" ")
 
         with self.assertRaises(InvalidTimestampFormat):
@@ -122,7 +123,7 @@ class TestTimestampFormat(unittest.TestCase):
         current_function = inspect.stack()[0][3]
         data = self.get_basic_result_data(current_function)
 
-        dt = datetime.datetime(2001,10,15)
+        dt = datetime.datetime(2001, 10, 15)
         datetime_format = "%Y-%m-%dT%H:%M"
         data["batch_timestamp"] = dt.strftime(datetime_format)
 
@@ -135,7 +136,7 @@ class TestTimestampFormat(unittest.TestCase):
         current_function = inspect.stack()[0][3]
         data = self.get_basic_result_data(current_function)
 
-        d = datetime.date(2001,10,15)
+        d = datetime.date(2001, 10, 15)
         data["batch_timestamp"] = str(d)
 
         with self.assertRaises(InvalidTimestampFormat):

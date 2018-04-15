@@ -32,6 +32,7 @@ from enum import Enum, unique
 
 logger = logging.getLogger()
 
+
 @unique
 class TestState(Enum):
     passing = 0
@@ -40,13 +41,14 @@ class TestState(Enum):
     stale = 3
     skipped = 4
 
+
 # A history of the same test in the same series
 class TestHistory(object):
 
     def __init__(self,
                  series_name,
                  test_name,
-                 days_until_result_stale=0, 
+                 days_until_result_stale=0,
                  datetime_utc_now=None):
 
         self.test_name = test_name
@@ -79,7 +81,7 @@ class TestHistory(object):
     # commit.
     def _determine_if_stable(self):
         last_result = self.tests[0].test_result
-        pass_count = 0;
+        pass_count = 0
         changes_count = 0
 
         non_skips = [test for test in self.tests if test.test_result != "SKIP"]
@@ -129,7 +131,6 @@ class TestHistory(object):
 
         # Otherwise we must have always been failing
         self.state = TestState.always_failing
-    
 
     def _get_milestones(self):
         self.last_success = None
@@ -139,12 +140,11 @@ class TestHistory(object):
         self.always_skipped = False
 
         for test in self.tests:
-            if self.last_success == None:
+            if self.last_success is None:
                 if test.test_result == "PASS":
                     self.last_success = test
                 if test.test_result == "FAIL":
                     self.first_fail = test
-        
 
     # TODO - potentially should remove skipped tests first, as opposed to oldest
     # first.
@@ -154,7 +154,7 @@ class TestHistory(object):
         if len(self.tests) <= keep_count:
             return
 
-        entires_to_remove = len(self.tests) - keep_count 
+        entires_to_remove = len(self.tests) - keep_count
 
         logger.debug("length of tests {}".format(len(self.tests)))
         logger.debug("entries to remove {}".format(str(entires_to_remove)))
@@ -171,7 +171,7 @@ class TestHistory(object):
             logger.debug("Checking test {}".format(str(test)))
             logger.debug("Last success {}".format(str(self.last_success)))
             logger.debug("First fail {}".format(str(self.first_fail)))
-            
+
             if test == self.last_success:
                 continue
 

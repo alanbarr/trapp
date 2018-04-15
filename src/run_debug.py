@@ -32,7 +32,6 @@ PORT = 5000
 
 logger = logging.getLogger()
 
-app.run(debug=DEBUG, 
+app.run(debug=DEBUG,
         host=HOST,
         port=PORT)
-

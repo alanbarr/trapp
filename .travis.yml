@@ -8,5 +8,8 @@ install:
     - ./scripts/create_env.sh
 
 script:
+    - source environment/bin/activate
     - cd src
     - python3 -m unittest -v
+    - cd ${TRAVIS_BUILD_DIR}
+    - ./scripts/run_pycodestyle.sh

@@ -36,7 +36,7 @@ TIMESTAMP_FORMAT = "%Y-%m-%d{}%H:%M:%S"
 
 SQL_TEST_QUERY = """
 SELECT
-        Test.test_name, 
+        Test.test_name,
         Series.series_name,
         Batch.batch_timestamp,
         Test.test_result,
@@ -55,9 +55,9 @@ FROM Test
         ON Test.batch_id = Batch.batch_id
     INNER JOIN Series
         ON Batch.series_id = Series.series_id
-    LEFT JOIN Vcs 
+    LEFT JOIN Vcs
         ON Batch.vcs_id = Vcs.vcs_id
-    LEFT JOIN Metadata 
+    LEFT JOIN Metadata
         ON Test.metadata_id = Metadata.metadata_id
 """
 
@@ -70,18 +70,18 @@ class TestResult(object):
                  series_name,
                  batch_timestamp,
                  test_result,
-                 vcs_system = None,
-                 vcs_revision = None,
-                 metadata = None,
-                 test_timestamp = None,
-                 test_duration = None,
-                 test_id = None,
-                 batch_id = None,
-                 series_id = None,
-                 metadata_id = None,
-                 vcs_id = None
+                 vcs_system=None,
+                 vcs_revision=None,
+                 metadata=None,
+                 test_timestamp=None,
+                 test_duration=None,
+                 test_id=None,
+                 batch_id=None,
+                 series_id=None,
+                 metadata_id=None,
+                 vcs_id=None
                  ):
-        
+
         if test_result not in TEST_RESULTS:
             raise error.InvalidArgument(
                     "Result was {}".format(test_result))
@@ -109,7 +109,7 @@ class TestResult(object):
 
         self.batch_id = batch_id
         self._db_batch_get_id()
-        
+
         self.vcs_id = vcs_id
         self._db_vcs_get_id()
 
@@ -134,7 +134,7 @@ class TestResult(object):
 
     def __eq__(self, other):
 
-        if other == None:
+        if other is None:
             return False
 
         if self.__dict__ != other.__dict__:
@@ -150,14 +150,14 @@ class TestResult(object):
             return
 
         self.test_id = Database.execute(
-                            """INSERT INTO Test 
-                                (test_name, 
-                                 test_result, 
+                            """INSERT INTO Test
+                                (test_name,
+                                 test_result,
                                  test_timestamp,
                                  test_duration,
                                  batch_id,
                                  metadata_id)
-                                 VALUES (?,?,?,?,?,?)""", 
+                                 VALUES (?,?,?,?,?,?)""",
                             (self.test_name,
                              self.test_result,
                              self.test_timestamp,
@@ -174,7 +174,7 @@ class TestResult(object):
             return
 
         self.test_id = Database.query_one(
-                            """SELECT test_id FROM Test WHERE 
+                            """SELECT test_id FROM Test WHERE
                             (test_name = ? AND  batch_id = ?)""",
                             (self.test_name, self.batch_id))
 
@@ -186,9 +186,9 @@ class TestResult(object):
             return
 
         self.vcs_id = Database.execute(
-                            """INSERT INTO Vcs 
-                            (vcs_system, vcs_revision) VALUES (?,?)""", 
-                            (self.vcs_system, self.vcs_revision ))
+                            """INSERT INTO Vcs
+                            (vcs_system, vcs_revision) VALUES (?,?)""",
+                            (self.vcs_system, self.vcs_revision))
 
     def _db_vcs_get_id(self):
 
@@ -199,7 +199,7 @@ class TestResult(object):
             return
 
         self.vcs_id = Database.query_one(
-                            """SELECT vcs_id FROM Vcs WHERE 
+                            """SELECT vcs_id FROM Vcs WHERE
                             (vcs_system = ? AND vcs_revision = ?)""",
                             (self.vcs_system, self.vcs_revision))
 
@@ -211,7 +211,7 @@ class TestResult(object):
             return
 
         self.metadata_id = Database.execute(
-                            """INSERT INTO Metadata (metadata) VALUES (?)""", 
+                            """INSERT INTO Metadata (metadata) VALUES (?)""",
                             (self.metadata, ))
 
     def _db_metadata_get_id(self):
@@ -220,10 +220,10 @@ class TestResult(object):
             return
 
         if self.metadata is None:
-            return 
+            return
 
         self.metadata_id = Database.query_one(
-                            """SELECT metadata_id FROM Metadata WHERE 
+                            """SELECT metadata_id FROM Metadata WHERE
                             metadata = (?)""",
                             (self.metadata,))
 
@@ -233,7 +233,7 @@ class TestResult(object):
             return
 
         self.series_id = Database.execute(
-                            """INSERT INTO Series (series_name) VALUES (?)""", 
+                            """INSERT INTO Series (series_name) VALUES (?)""",
                             (self.series_name,))
 
     def _db_series_get_id(self):
@@ -242,31 +242,31 @@ class TestResult(object):
             return
 
         self.series_id = Database.query_one(
-                            """SELECT series_id FROM Series WHERE series_name = (?)""",
-                            (self.series_name,)) 
+                    """SELECT series_id FROM Series WHERE series_name = (?)""",
+                    (self.series_name,))
 
     def _db_batch_save(self):
-        
+
         if self.batch_id is not None:
             return
 
         self.batch_id = Database.execute(
-                            """INSERT INTO Batch 
-                            (series_id, batch_timestamp, vcs_id) 
-                            VALUES (?,?,?)""", 
+                            """INSERT INTO Batch
+                            (series_id, batch_timestamp, vcs_id)
+                            VALUES (?,?,?)""",
                             (self.series_id, self.batch_timestamp, self.vcs_id))
 
     def _db_batch_get_id(self):
 
         if self.batch_id is not None:
-            return 
+            return
 
         if self.series_id is None:
             return
 
         self.batch_id = Database.query_one(
-                            """SELECT batch_id FROM Batch WHERE 
-                            (batch_timestamp = ? AND series_id = ?)""", 
+                            """SELECT batch_id FROM Batch WHERE
+                            (batch_timestamp = ? AND series_id = ?)""",
                             (self.batch_timestamp, self.series_id))
 
     def db_save(self):
@@ -275,7 +275,6 @@ class TestResult(object):
         self._db_series_save()
         self._db_batch_save()
         self._db_test_save()
-
 
     def db_delete(self):
         Database.execute("""DELETE FROM Test WHERE Test.test_id = (?)""",
@@ -317,7 +316,6 @@ class TestResult(object):
                              (self.vcs_id, ))
         self.vcs_id = None
 
-
     @classmethod
     def get_by_id(cls, test_id):
         logger.debug("Finding by id")
@@ -349,11 +347,11 @@ class TestResult(object):
                        series_name,
                        batch_timestamp,
                        test_result,
-                       vcs_system = None,
-                       vcs_revision = None,
-                       metadata = None,
-                       test_timestamp = None,
-                       test_duration = None):
+                       vcs_system=None,
+                       vcs_revision=None,
+                       metadata=None,
+                       test_timestamp=None,
+                       test_duration=None):
 
         if self.test_name != test_name:
             logger.debug("Not equal: test_name")
@@ -411,5 +409,4 @@ class TestResult(object):
             raise error.InvalidTimestampFormat(
                     "Invalid timestamp string {}".format(timestamp)) from err
 
-        return dt 
-
+        return dt
